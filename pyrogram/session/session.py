@@ -111,7 +111,7 @@ class Session:
         self.is_connected = Event()
 
     def start(self):
-        while True:
+        while self.client.do_reconnect:
             self.connection = Connection(self.dc_id, self.client.test_mode, self.client.ipv6, self.client.proxy)
 
             try:
@@ -171,6 +171,8 @@ class Session:
             else:
                 break
 
+        if not self.client.do_reconnect:
+            return
         self.is_connected.set()
 
         log.debug("Session started")
@@ -206,7 +208,7 @@ class Session:
 
         if not self.is_media and callable(self.client.disconnect_handler):
             try:
-                self.client.disconnect_handler(self.client)
+                self.client.disconnect_handler(self.client, self.connection.first_connected)
             except Exception as e:
                 log.error(e, exc_info=True)
 

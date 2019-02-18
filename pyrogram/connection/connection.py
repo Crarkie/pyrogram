@@ -43,6 +43,7 @@ class Connection:
         self.proxy = proxy
         self.address = DataCenter(dc_id, test_mode, ipv6)
         self.mode = self.MODES.get(mode, TCPAbridged)
+        self.first_connected = False
 
         self.lock = threading.Lock()
         self.connection = None
@@ -64,6 +65,7 @@ class Connection:
                     "6" if self.ipv6 else "4",
                     self.mode.__name__
                 ))
+                self.first_connected = True
                 break
         else:
             log.warning("Connection failed! Trying again...")

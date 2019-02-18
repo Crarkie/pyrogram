@@ -226,6 +226,7 @@ class Client(Methods, BaseClient):
         self.plugins = plugins
         self.no_updates = no_updates
         self.takeout = takeout
+        self.do_reconnect = True
 
         self.dispatcher = Dispatcher(self, workers)
 
@@ -277,6 +278,8 @@ class Client(Methods, BaseClient):
         )
 
         self.session.start()
+        if not self.do_reconnect:
+            raise ConnectionError("Stop reconnect")
         self.is_started = True
 
         try:
@@ -1357,6 +1360,9 @@ class Client(Methods, BaseClient):
                 return self.peers_by_id[peer_id]
             except KeyError:
                 raise PeerIdInvalid
+
+    def stop_reconnection(self):
+        self.do_reconnect = False
 
     def save_file(self,
                   path: str,
